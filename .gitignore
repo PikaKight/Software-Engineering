@@ -4,6 +4,7 @@ node_modules/
 *.vsix
 server/*
 !server/.gitkeep
+.vscode
 
 ### LaTeX ###
 ## Core latex/pdflatex auxiliary files:
