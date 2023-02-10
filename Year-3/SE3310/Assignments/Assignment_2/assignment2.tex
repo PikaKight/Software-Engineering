@@ -18,7 +18,32 @@
         \thispagestyle{empty}
     \end{titlepage}
 
-    \section{Identify the regular languages}
+    \section{Regular Expressions}
+        \subsection{\[L_a = \{wwwa^n:w \in \{a,b\}, n > 0\}\]}
+            \indent
+            Based on this language, w is either all a or all b. This language is a regular language.
+            \begin{figure}[ht]
+                \centering
+                \begin{tikzpicture}
+                    \node[state, initial] (w0) {w0};
+                    \node[state, above right = of w0] (a1) {w1};
+                    \node[state, right = of a1] (a2) {w2};
+                    \node[state, below right =of w0] (b1) {w1};
+                    \node[state, right =of b1] (b2) {w1};
+                    \node[state, below right =of a2] (w3) {w3};
+                    \node[state, accepting, right =of w3] (an) {\(a^n\)};
+                    
+
+                    \draw   (w0) edge[->, right, above] node{a} (a1)
+                            (w0) edge[->, right, below] node{b} (b1)
+                            (a1) edge[->, right] node[above] {a} (a2)
+                            (b1) edge[->, right] node[below] {b} (b2)
+                            (a2) edge[->, right] node[above] {a} (w3)
+                            (b2) edge[->, right] node[above] {b} (w3)
+                            (w3) edge[->, right] node[above] {a} (an);
+                        
+                \end{tikzpicture}  
+            \end{figure}
         
                 
 \end{document}
