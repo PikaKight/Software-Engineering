@@ -14,6 +14,7 @@ AS		:= arm-altera-eabi-as.exe
 CC		:= arm-altera-eabi-gcc.exe
 LD		:= arm-altera-eabi-ld.exe
 OC		:= arm-altera-eabi-objcopy.exe
+OD 		:= arm-altera-eabi-objdump
 RM		:= rm -f
 
 # Flags
@@ -65,6 +66,7 @@ COMPILE: Lab1Part1.srec
 Lab1Part1.srec: Lab1Part1.axf
 	$(RM) $@
 	$(OC) $(OCFLAGS) $< $@
+	$(OC) -S $< > $<.objdump
 
 Lab1Part1.axf: $(OBJS)
 	$(RM) $@
@@ -72,6 +74,7 @@ Lab1Part1.axf: $(OBJS)
 
 %.c.o: %.c $(HDRS)
 	$(RM) $@
+	$(CC) $(CCFLAGS) $< -o $@
 	$(CC) $(CCFLAGS) $< -o $@
 
 %.s.o: %.s $(HDRS)
