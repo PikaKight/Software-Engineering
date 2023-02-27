@@ -9,12 +9,12 @@
         <terminal>Semihosting</terminal>
     </system>
     <program>
-        <type>Assembly Program</type>
+        <type>C Program</type>
         <source_files>
-            <source_file filepath="true">../../Assembly/Lab1Part1.s</source_file>
+            <source_file filepath="true">../../C/Lab1Part2.c</source_file>
         </source_files>
         <options>
-            <start_symbol>_start</start_symbol>
+            <compiler_flags>-g -O1</compiler_flags>
         </options>
         <linker_sections type="Basic">
             <linker_section name=".text">
