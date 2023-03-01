@@ -1,0 +1,12 @@
+{
+  "name": "Assignment 1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "../Client/GetImage.js",
+  "dependencies": {
+    "open": "^7.4.0"
+  },
+  "devDependencies": {},
+  "author": "Marcus Tuen Muk",
+  "license": "ISC"
+}
