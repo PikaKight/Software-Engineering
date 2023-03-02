@@ -1,0 +1,41 @@
+\documentclass[12pt]{article}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{breqn}
+
+\usetikzlibrary{automata, positioning, arrows}
+
+\title{SE 3310 Theoretical Foundations of Software Engineering Assignment 3}
+\author{Marcus Tuen Muk}
+\date{March 02 2023}
+
+
+\begin{document}
+
+
+    \section{Pushdown Automaton}
+        
+        \subsection{Give the state-transition diagram of a pushdown automaton recognizing the following language.}
+            \[a^nb^{(n+m)}c^m : n,m > 0\]
+
+            \begin{figure}[ht]
+                \centering
+                \begin{tikzpicture}
+                    \node[state, accepting, initial] (q0) {q0};
+                    \node[state, right = 3cm of q0] (q1) {q1};
+                    \node[state, below = 3cm of q1] (q2) {q2};
+                    \node[state, below = 3cm of q2] (q3) {q3};
+                    \node[state, accepting, left = 3cm of q3] (q4) {q4};
+                                         
+
+                    \draw   (q0) edge[->, right] node[above]{$\epsilon$, $\epsilon$ $\rightarrow$ $\$$} (q1)
+                            (q1) edge[->, loop right] node[right]{a, $\epsilon$ $\rightarrow$ a} (q1)
+                            (q1) edge[->, below] node[right]{b, a $\vert$ $\epsilon$  $\rightarrow$ b} (q2)
+                            (q2) edge[->, loop right] node[right]{b, a $\vert$ $\epsilon$ $\rightarrow$ b} (q2)
+                            (q2) edge[->, below] node[right]{c, b $\vert$ $\epsilon$ $\rightarrow$ $\epsilon$} (q3)
+                            (q3) edge[->, loop right] node[right]{c, b $\vert$ $\epsilon$ $\rightarrow$ $\epsilon$} (q3)
+                            (q3) edge[->, left] node[below]{$\epsilon$, $\$$ $\rightarrow$ $\epsilon$} (q4);
+                \end{tikzpicture} 
+            \end{figure}
+\end{document}
