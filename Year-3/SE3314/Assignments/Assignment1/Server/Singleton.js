@@ -1,24 +1,35 @@
 
-// Some code need to be added here, that are common for the module
+let sequenceNumber;
+let timerInterval = 10;
+let timer;
+
+const timerRun = () => {
+    timer++;
+    if (timer == 4294967296){
+        Math.floor(1000 * Math.random());
+    }
+}
 
 module.exports = {
     init: function() {
-       // init function needs to be implemented here //
+       timer = Math.floor(1000 * Math.random());
+       setInterval(timerRun, timerInterval);
+       sequenceNumber = Math.floor(1000 * Math.random());
     },
 
     //--------------------------
     //getSequenceNumber: return the current sequence number + 1
     //--------------------------
     getSequenceNumber: function() {
-      // Enter your code here //
-        return "this should be a correct sequence number";
+        sequenceNumber++;
+        return sequenceNumber;
     },
 
     //--------------------------
     //getTimestamp: return the current timer value
     //--------------------------
     getTimestamp: function() {
-        return "this should be a correct timestamp";
+        return timer;
     }
 
 

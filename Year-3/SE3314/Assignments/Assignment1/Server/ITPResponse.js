@@ -1,12 +1,24 @@
+const HEADER_SIZE = 12;
 
-// You may need to add some delectation here
+let version, responseType, sequenceNumber, timeStamp;
 
 module.exports = {
 
-    init: function () { // feel free to add function parameters as needed
-        //
-        // enter your code here
-        //
+    responseHeader: "",
+    payloadSize: "",
+    payload: "",
+
+    init: function (version, resType, sequenceNum, currentTime, imageData) {
+        version = version;
+        
+        this.responseHeader = new Buffer.alloc(HEADER_SIZE);
+        storeBitPacket(this.responseHeader, version, 0, 4);
+        storeBitPacket(this.responseHeader, resType, 4, 8);
+        storeBitPacket(this.responseHeader, sequenceNum, 12, 16);
+        storeBitPacket(this.responseHeader, currentTime, 32, 32);
+        storeBitPacket(this.responseHeader, imageData.length, 64, 32)
+
+        
     },
 
     //--------------------------
