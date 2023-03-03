@@ -1,19 +1,53 @@
-// You may need to add some delectation here
+const HEADER_SIZE = 12;
+
+let ver, requestType, currentTime;
 
 module.exports = {
-  init: function () {
-    // feel free to add function parameters as needed
-    //
-    // enter your code here
-    //
+  requestHeader: "",
+  payloadSize: 0,
+  payload: "",
+
+  init: function (vers, fullImageName, timestamp) {
+    ver = vers;
+    requestType = 0;
+    currentTime = timestamp;
+
+    this.requestHeader = new Buffer.alloc(HEADER_SIZE);
+
+    storeBitPacket(this.requestHeader, ver * 1, 0, 4);
+    storeBitPacket(this.requestHeader, requestType, 24, 8);
+
+    storeBitPacket(this.requestHeader, currentTime, 32, 32);
+
+    const imageExtension = {
+      1: "BMP",
+      2: "JPEG",
+      3: "GIF",
+      4: "PNG",
+      5: "TIFF",
+      15: "RAW"
+    };
+
+    let imageName = stringToBytes(fullImageName.split(".")[0]);
+    let imageType = imageExtension[fullImageName.split(".")[1].toUpperCase()];
+
   },
 
   //--------------------------
   //getBytePacket: returns the entire packet in bytes
   //--------------------------
   getBytePacket: function () {
-    // enter your code here
-    return "this should be a correct packet";
+    let packet = new Buffer.alloc(this.payload.length + HEADER_SIZE);
+
+    for (let head = 0; head < HEADER_SIZE; head++){
+      packet[head] = this.requestHeader[head];
+    }
+
+    for (let pl = 0; pl < this.payload.length; pl++){
+      packet[pl] = this.payload[pl];
+    }
+
+    return packet;
   },
 };
 

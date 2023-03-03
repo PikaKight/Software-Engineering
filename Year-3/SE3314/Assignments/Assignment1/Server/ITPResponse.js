@@ -18,15 +18,27 @@ module.exports = {
         storeBitPacket(this.responseHeader, currentTime, 32, 32);
         storeBitPacket(this.responseHeader, imageData.length, 64, 32)
 
-        
+        this.payload = new Buffer.alloc(imageData.length + 4);
+
+        for (let i = 0; i < imageData.length; i++){
+            this.payload[i] = imageData[i]
+        }
     },
 
     //--------------------------
     //getpacket: returns the entire packet
     //--------------------------
     getPacket: function () {
-        // enter your code here
-        return "this should be a correct packet";
+        let packet = new Buffer.alloc(this.payload.length + HEADER_SIZE);
+        
+        for (let head = 0; head < HEADER_SIZE; head++){
+            packet[head] = this.responseHeader[head];
+        }
+        for (let pl = 0; pl < this.payload.length; pl++){
+            packet[pl + HEADER_SIZE] = this.payload[pl];
+        }
+        
+        return packet;
     }
 };
 

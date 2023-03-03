@@ -1,20 +1,95 @@
-let ITPpacket = require('./ITPResponse');
-let singleton = require('./Singleton');
+const fs = require('fs');
+const ITPpacket = require('./ITPResponse');
+const singleton = require('./Singleton');
 
-// You may need to add some delectation here
-
+let clientNames = {};
+let clientIP = {};
+let startTimestamp = {};
 
 module.exports = {
 
     handleClientJoining: function (sock) {
-        //
-        // Enter your code here
-        //
-        // you may need to develop some helper functions
-        // that are defined outside this export block
+        assignClientName(sock, clientNames);
+        
+        const chunks = [];
+        
+        console.log(`\n${clientNames[sock.id]} is connected at timestamp: 
+        ${startTimestamp[sock.id]}\n`);   
+        
+        sock.on("data", (requestPacket) => handleClientRequest(requestPack, sock));
+        
+        sock.on("close", () => handleClientExit());
     }
 };
 
+const assignClientName = (sock, clientNames) => {
+    sock.id = sock.remoteAddress + ":" + sock.remotePort;
+    startTimestamp[sock.id] = singleton.getTimestamp();
+    clientNames[sock.id] = `Client-${startTimestamp[sock.id]}`;
+    clientIP[sock.id] = sock.remoteAddress;
+}
+
+const handleClientRequest = (requestPacket, sock) => {
+    console.log("IP Packet Received: \n");
+    printPacketBit(requestPacket);
+
+    let vers = parseBitPacket(data, 0, 4);
+    let requestType = parseBitPacket(data, 24, 8);
+    const requestName = {
+        0: "Query",
+        1: "Found",
+        2: "Not found",
+        3: "Busy"
+    };
+
+    const imageExtension = {
+        1: "BMP",
+        2: "JPEG",
+        3: "GIF",
+        4: "PNG",
+        5: "TIFF",
+        15: "RAW"
+    };
+
+    let timestamp = parseBitPacket(data, 32, 32);
+    
+    let imageType = parseBitPacket(data, 64, 4);
+    let imageTypeName = imageExtension[imageType];
+
+    let imageNameSize = parseBitPacket(data, 68, 28);
+    let imageName = bytesToString(data.slice(12,13 + imageNameSize));
+
+    console.log(`\n ${clientNames[sock.id]} requests:
+                 \n \t --ITP Version: ${vers}
+                 \n \t --Timestamp: ${timestamp}
+                 \n \t --Request Type: ${requestName[requestType]}
+                 \n \t --Image File Extension(s): ${imageTypeName}
+                 \n \t --Image File Name: ${imageName}`);
+
+                 if (version == 7) {  
+                    let imageFullName = "images/" + imageName + "." + imageTypeName;
+                    let imageData = fs.readFileSync(imageFullName);   
+              
+                  ITPpacket.init(
+                    version,
+                    1, // response type
+                    singleton.getSequenceNumber(), // sequence number
+                    singleton.getTimestamp(), // timestamp
+                    imageData, // image data
+                  );
+              
+                  sock.write(ITPpacket.getBytePacket());
+                  sock.end();
+                } else {
+                  console.log("The protocol version is not supported");
+                  sock.end();
+                }
+
+}
+
+const handleClientExit = () => {
+    console.log("Disconnected from the server\nConnection closed ")
+}
 
 //// Some usefull methods ////
 // Feel free to use them, but DON NOT change or add any code in these methods.
