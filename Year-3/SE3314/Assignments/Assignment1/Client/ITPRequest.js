@@ -8,6 +8,7 @@ module.exports = {
   payload: "",
 
   init: function (vers, fullImageName, timestamp) {
+
     ver = vers;
     requestType = 0;
     currentTime = timestamp;
@@ -20,17 +21,27 @@ module.exports = {
     storeBitPacket(this.requestHeader, currentTime, 32, 32);
 
     const imageExtension = {
-      1: "BMP",
-      2: "JPEG",
-      3: "GIF",
-      4: "PNG",
-      5: "TIFF",
-      15: "RAW"
+      "BMP": 1,
+      "JPEG": 2,
+      "GIF": 3,
+      "PNG": 4,
+      "TIFF": 5,
+      "RAW": 15
     };
 
     let imageName = stringToBytes(fullImageName.split(".")[0]);
+    
     let imageType = imageExtension[fullImageName.split(".")[1].toUpperCase()];
 
+    storeBitPacket(this.requestHeader, imageType, 64, 4);
+    storeBitPacket(this.requestHeader, imageName.length, 68, 28);
+
+    this.payloadSize = imageName.length;
+    this.payload = new Buffer.alloc(this.payloadSize);
+
+    for (let i = 0; i < imageName.length; i++){
+      this.payload[i] = imageName[i];
+    };
   },
 
   //--------------------------

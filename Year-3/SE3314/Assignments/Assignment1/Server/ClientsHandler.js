@@ -16,7 +16,7 @@ module.exports = {
         console.log(`\n${clientNames[sock.id]} is connected at timestamp: 
         ${startTimestamp[sock.id]}\n`);   
         
-        sock.on("data", (requestPacket) => handleClientRequest(requestPack, sock));
+        sock.on("data", (requestPacket) => handleClientRequest(requestPacket, sock));
         
         sock.on("close", () => handleClientExit());
     }
@@ -33,8 +33,8 @@ const handleClientRequest = (requestPacket, sock) => {
     console.log("IP Packet Received: \n");
     printPacketBit(requestPacket);
 
-    let vers = parseBitPacket(data, 0, 4);
-    let requestType = parseBitPacket(data, 24, 8);
+    let vers = parseBitPacket(requestPacket, 0, 4);
+    let requestType = parseBitPacket(requestPacket, 24, 8);
     const requestName = {
         0: "Query",
         1: "Found",
@@ -51,13 +51,14 @@ const handleClientRequest = (requestPacket, sock) => {
         15: "RAW"
     };
 
-    let timestamp = parseBitPacket(data, 32, 32);
+    let timestamp = parseBitPacket(requestPacket, 32, 32);
     
-    let imageType = parseBitPacket(data, 64, 4);
+    let imageType = parseBitPacket(requestPacket, 64, 4);
+
     let imageTypeName = imageExtension[imageType];
 
-    let imageNameSize = parseBitPacket(data, 68, 28);
-    let imageName = bytesToString(data.slice(12,13 + imageNameSize));
+    let imageNameSize = parseBitPacket(requestPacket, 68, 28);
+    let imageName = bytesToString(requestPacket.slice(12,13 + imageNameSize));
 
     console.log(`\n ${clientNames[sock.id]} requests:
                  \n \t --ITP Version: ${vers}
@@ -66,24 +67,26 @@ const handleClientRequest = (requestPacket, sock) => {
                  \n \t --Image File Extension(s): ${imageTypeName}
                  \n \t --Image File Name: ${imageName}`);
 
-                 if (version == 7) {  
-                    let imageFullName = "images/" + imageName + "." + imageTypeName;
-                    let imageData = fs.readFileSync(imageFullName);   
-              
-                  ITPpacket.init(
-                    version,
-                    1, // response type
-                    singleton.getSequenceNumber(), // sequence number
-                    singleton.getTimestamp(), // timestamp
-                    imageData, // image data
-                  );
-              
-                  sock.write(ITPpacket.getBytePacket());
-                  sock.end();
-                } else {
-                  console.log("The protocol version is not supported");
-                  sock.end();
-                }
+    if (vers == 7) {  
+        let imageFullName = "images/" + imageName + "." + imageTypeName;
+        let imageData = fs.readFileSync(imageFullName);   
+        
+        ITPpacket.init(
+            vers,
+            1, // response type
+            singleton.getSequenceNumber(), // sequence number
+            singleton.getTimestamp(), // timestamp
+            imageData, // image data
+        );
+     
+        sock.write(ITPpacket.getBytePacket());
+        sock.end();
+    } 
+    
+    else {
+        console.log("The protocol version is not supported");
+        sock.end();
+    }
 
 }
 

@@ -34,7 +34,9 @@ const imageExtension = {
 };
 
 const hostServerIPandPort = process.argv[3].split(":");
+
 const imageName = process.argv[5];
+
 const ITPVersion = process.argv[7];
 
 const PORT = hostServerIPandPort[1];
@@ -71,14 +73,12 @@ client.on("end", () => {
   console.log("\n Packet Header Received: ");
   printPacketBit(header);
 
-  let imageDataSize = payload.length;
-
   fs.writeFileSync(imageName, payload);
 
   (async () => {
     await open(imageName, {wait: true});
     process.exit(1);
-  });
+  }) ();
 
   const version = parseBitPacket(header, 0, 4);
   const responseType = responseName[parseBitPacket(header, 4, 8)];
