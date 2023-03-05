@@ -10,7 +10,7 @@ let timerInterval = 10;
 const timerRun = () => {
   timer++;
   if (timer == 4294967296){
-      Math.floor(1000 * Math.random());
+      Math.floor(999 * Math.random());
   }
 }
 
@@ -37,10 +37,9 @@ const imageName = process.argv[5];
 const ITPVersion = process.argv[7];
 
 const PORT = hostServerIPandPort[1];
-
 const HOST = hostServerIPandPort[0];
 
-timer = Math.floor(1000 * Math.random());
+timer = Math.floor(999 * Math.random());
 setInterval(timerRun, timerInterval);
 
 ITPpacket.init(ITPVersion, imageName, timer);
@@ -129,6 +128,3 @@ function parseBitPacket(packet, offset, length) {
     }
     console.log(bitString);
   }
-
-
-  

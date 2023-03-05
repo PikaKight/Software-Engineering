@@ -6,15 +6,15 @@ let timer;
 const timerRun = () => {
     timer++;
     if (timer == 4294967296){
-        Math.floor(1000 * Math.random());
+        Math.floor(999 * Math.random());
     }
 }
 
 module.exports = {
     init: function() {
-       timer = Math.floor(1000 * Math.random());
+       timer = Math.floor(999 * Math.random());
        setInterval(timerRun, timerInterval);
-       sequenceNumber = Math.floor(1000 * Math.random());
+       sequenceNumber = Math.floor(999 * Math.random());
     },
 
     //--------------------------

@@ -38,7 +38,7 @@ module.exports = {
     
     this.payload = new Buffer.alloc(this.payloadSize);
 
-    for (let i = 0; i < imageName.length; i++){
+    for (i = 0; i < imageName.length; i++){
       this.payload[i] = imageName[i];
     };
   },
@@ -54,7 +54,7 @@ module.exports = {
     }
 
     for (let pl = 0; pl < this.payload.length; pl++){
-      packet[pl] = this.payload[pl];
+      packet[pl + HEADER_SIZE] = this.payload[pl];
     }
 
     return packet;

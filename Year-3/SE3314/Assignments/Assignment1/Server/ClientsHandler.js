@@ -81,13 +81,14 @@ const handleClientRequest = (requestPacket, sock) => {
             imageData // image data
         );
      
-        sock.write(ITPpacket.getBytePacket());
+        sock.write(ITPpacket.getPacket());
         sock.end();
     }
     else {
         console.log("The protocol version is not supported");
         sock.end();
     }
+
 }
 
 const handleClientExit = () => {
