@@ -14,9 +14,6 @@ const timerRun = () => {
   }
 }
 
-timer = Math.floor(1000 * Math.random());
-setInterval(timerRun, timerInterval);
-
 const responseName = {
   0: "Query",
   1: "Found",
@@ -43,6 +40,9 @@ const PORT = hostServerIPandPort[1];
 
 const HOST = hostServerIPandPort[0];
 
+timer = Math.floor(1000 * Math.random());
+setInterval(timerRun, timerInterval);
+
 ITPpacket.init(ITPVersion, imageName, timer);
 
 let client = new net.Socket();
@@ -52,7 +52,6 @@ client.connect(PORT, HOST, () => {
 
   client.write(ITPpacket.getBytePacket());
 });
-
 
 const chunks = [];
 
@@ -65,13 +64,15 @@ client.on("pause", () => {
 });
 
 client.on("end", () => {
-  const responsePacket = new Buffer.concat(chunks);
+  
+  const responsePacket = Buffer.concat(chunks);
 
   let header = responsePacket.slice(0, 12);
   let payload = responsePacket.slice(12);
 
   console.log("\n Packet Header Received: ");
   printPacketBit(header);
+
 
   fs.writeFileSync(imageName, payload);
 

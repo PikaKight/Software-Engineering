@@ -1,6 +1,15 @@
 const HEADER_SIZE = 12;
 
-let ver, requestType, currentTime;
+let requestType;
+
+const imageExtension = {
+  "BMP": 1,
+  "JPEG": 2,
+  "GIF": 3,
+  "PNG": 4,
+  "TIFF": 5,
+  "RAW": 15
+};
 
 module.exports = {
   requestHeader: "",
@@ -8,26 +17,15 @@ module.exports = {
   payload: "",
 
   init: function (vers, fullImageName, timestamp) {
-
-    ver = vers;
     requestType = 0;
-    currentTime = timestamp;
 
     this.requestHeader = new Buffer.alloc(HEADER_SIZE);
 
-    storeBitPacket(this.requestHeader, ver * 1, 0, 4);
+    storeBitPacket(this.requestHeader, vers * 1, 0, 4);
+
     storeBitPacket(this.requestHeader, requestType, 24, 8);
 
-    storeBitPacket(this.requestHeader, currentTime, 32, 32);
-
-    const imageExtension = {
-      "BMP": 1,
-      "JPEG": 2,
-      "GIF": 3,
-      "PNG": 4,
-      "TIFF": 5,
-      "RAW": 15
-    };
+    storeBitPacket(this.requestHeader, timestamp, 32, 32);
 
     let imageName = stringToBytes(fullImageName.split(".")[0]);
     
@@ -37,6 +35,7 @@ module.exports = {
     storeBitPacket(this.requestHeader, imageName.length, 68, 28);
 
     this.payloadSize = imageName.length;
+    
     this.payload = new Buffer.alloc(this.payloadSize);
 
     for (let i = 0; i < imageName.length; i++){

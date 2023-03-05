@@ -1,7 +1,5 @@
 const HEADER_SIZE = 12;
 
-let version, responseType, sequenceNumber, timeStamp;
-
 module.exports = {
 
     responseHeader: "",
@@ -9,7 +7,6 @@ module.exports = {
     payload: "",
 
     init: function (version, resType, sequenceNum, currentTime, imageData) {
-        version = version;
         
         this.responseHeader = new Buffer.alloc(HEADER_SIZE);
         storeBitPacket(this.responseHeader, version, 0, 4);
@@ -34,6 +31,7 @@ module.exports = {
         for (let head = 0; head < HEADER_SIZE; head++){
             packet[head] = this.responseHeader[head];
         }
+        
         for (let pl = 0; pl < this.payload.length; pl++){
             packet[pl + HEADER_SIZE] = this.payload[pl];
         }
