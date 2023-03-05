@@ -275,3 +275,5 @@ TSWLatexianTemp*
 dist/
 
 .vscode
+
+*.zip

@@ -4,16 +4,23 @@ const open = require("open");
 
 const ITPpacket = require("./ITPRequest"); 
 
+/**
+ * used to get a random number from 0 - 1000 as the timestamp
+ */
 let timer;
 let timerInterval = 10;
 
 const timerRun = () => {
   timer++;
   if (timer == 4294967296){
-      Math.floor(999 * Math.random());
+      Math.floor(1000 * Math.random());
   }
 }
 
+timer = Math.floor(1000 * Math.random());
+setInterval(timerRun, timerInterval);
+
+// response names
 const responseName = {
   0: "Query",
   1: "Found",
@@ -21,6 +28,7 @@ const responseName = {
   3: "Busy"
 };
 
+// image extension names
 const imageExtension = {
   1: "BMP",
   2: "JPEG",
@@ -30,6 +38,9 @@ const imageExtension = {
   15: "RAW"
 };
 
+/**
+ * Getting the required information from the command 
+ */
 const hostServerIPandPort = process.argv[3].split(":");
 
 const imageName = process.argv[5];
@@ -39,19 +50,22 @@ const ITPVersion = process.argv[7];
 const PORT = hostServerIPandPort[1];
 const HOST = hostServerIPandPort[0];
 
-timer = Math.floor(999 * Math.random());
-setInterval(timerRun, timerInterval);
-
+// initiates the ITP request
 ITPpacket.init(ITPVersion, imageName, timer);
 
+// creates the socket needed to connect to the server
 let client = new net.Socket();
 
+
+// connects to the server
 client.connect(PORT, HOST, () => {
   console.log(`Connected to ImageDB server on: ${HOST}:${PORT}`);
 
+  // sends the request to the server
   client.write(ITPpacket.getBytePacket());
 });
 
+// used to save the response from server
 const chunks = [];
 
 client.on("data", (chunk) => {
@@ -62,10 +76,12 @@ client.on("pause", () => {
   console.log("pause");
 });
 
+
 client.on("end", () => {
   
   const responsePacket = Buffer.concat(chunks);
 
+  // gets the header and payload from the response packet
   let header = responsePacket.slice(0, 12);
   let payload = responsePacket.slice(12);
 
@@ -75,11 +91,13 @@ client.on("end", () => {
 
   fs.writeFileSync(imageName, payload);
 
+  // opens the image
   (async () => {
     await open(imageName, {wait: true});
     process.exit(1);
   }) ();
 
+  // gets the version, response type, sequence number, timestamp from the header
   const version = parseBitPacket(header, 0, 4);
   const responseType = responseName[parseBitPacket(header, 4, 8)];
   const sequenceNum = parseBitPacket(header, 12, 16);

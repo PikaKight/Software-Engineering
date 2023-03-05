@@ -2,6 +2,7 @@ const HEADER_SIZE = 12;
 
 let requestType;
 
+// image extension 
 const imageExtension = {
   "BMP": 1,
   "JPEG": 2,
@@ -21,16 +22,19 @@ module.exports = {
 
     this.requestHeader = new Buffer.alloc(HEADER_SIZE);
 
+    // turns the version, request type, timestamp as bit packet
     storeBitPacket(this.requestHeader, vers * 1, 0, 4);
 
     storeBitPacket(this.requestHeader, requestType, 24, 8);
 
     storeBitPacket(this.requestHeader, timestamp, 32, 32);
 
+    // separates the image name and image type
     let imageName = stringToBytes(fullImageName.split(".")[0]);
     
     let imageType = imageExtension[fullImageName.split(".")[1].toUpperCase()];
 
+    // stores the image name and image type as bit packet
     storeBitPacket(this.requestHeader, imageType, 64, 4);
     storeBitPacket(this.requestHeader, imageName.length, 68, 28);
 
@@ -38,6 +42,7 @@ module.exports = {
     
     this.payload = new Buffer.alloc(this.payloadSize);
 
+    // copies the image name into the payload
     for (i = 0; i < imageName.length; i++){
       this.payload[i] = imageName[i];
     };
@@ -49,10 +54,12 @@ module.exports = {
   getBytePacket: function () {
     let packet = new Buffer.alloc(this.payload.length + HEADER_SIZE);
 
+    // copies the header into the packet
     for (let head = 0; head < HEADER_SIZE; head++){
       packet[head] = this.requestHeader[head];
     }
 
+    // copies the payload into the packet
     for (let pl = 0; pl < this.payload.length; pl++){
       packet[pl + HEADER_SIZE] = this.payload[pl];
     }

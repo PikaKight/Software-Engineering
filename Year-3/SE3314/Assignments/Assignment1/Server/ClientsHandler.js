@@ -2,6 +2,7 @@ const fs = require('fs');
 const ITPpacket = require('./ITPResponse');
 const singleton = require('./Singleton');
 
+// used to store the request information
 let clientNames = {};
 let clientIP = {};
 let startTimestamp = {};
@@ -38,6 +39,11 @@ module.exports = {
     }
 };
 
+/**
+ * sets the client name, address, port and timestamp info
+ * @param {*} sock 
+ * @param {*} clientNames 
+ */
 const assignClientName = (sock, clientNames) => {
     sock.id = `${sock.remoteAddress}:${sock.remotePort};`
     startTimestamp[sock.id] = singleton.getTimestamp();
@@ -45,11 +51,17 @@ const assignClientName = (sock, clientNames) => {
     clientIP[sock.id] = sock.remoteAddress;
 }
 
+/**
+ * handles the request and sends it back to client
+ * @param {*} requestPacket 
+ * @param {*} sock 
+ */
 const handleClientRequest = (requestPacket, sock) => {
     console.log("IP Packet Received: \n");
 
     printPacketBit(requestPacket);
 
+    // gets the request information
     let vers = parseBitPacket(requestPacket, 0, 4);
     let requestType = parseBitPacket(requestPacket, 24, 8);
 
@@ -70,9 +82,11 @@ const handleClientRequest = (requestPacket, sock) => {
                  \n \t --Image File Name: ${imageName}`);
 
     if (vers == 7) {  
+        // gets the image file
         let imageFullName = `images/${imageName}.${imageTypeName}`;
         let imageData = fs.readFileSync(imageFullName);   
         
+        // creates the response
         ITPpacket.init(
             vers,
             1, // response type
@@ -80,7 +94,8 @@ const handleClientRequest = (requestPacket, sock) => {
             singleton.getTimestamp(), // timestamp
             imageData // image data
         );
-     
+            
+        // sends the response
         sock.write(ITPpacket.getPacket());
         sock.end();
     }

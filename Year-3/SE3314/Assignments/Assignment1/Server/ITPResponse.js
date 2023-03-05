@@ -8,6 +8,7 @@ module.exports = {
 
     init: function (version, resType, sequenceNum, currentTime, imageData) {
         
+        // stores the response info as bit packets
         this.responseHeader = new Buffer.alloc(HEADER_SIZE);
         storeBitPacket(this.responseHeader, version, 0, 4);
         storeBitPacket(this.responseHeader, resType, 4, 8);
@@ -16,7 +17,8 @@ module.exports = {
         storeBitPacket(this.responseHeader, imageData.length, 64, 32)
 
         this.payload = new Buffer.alloc(imageData.length + 4);
-
+        
+        // copies the image name into the payload
         for (let i = 0; i < imageData.length; i++){
             this.payload[i] = imageData[i]
         }
@@ -28,10 +30,12 @@ module.exports = {
     getPacket: function () {
         let packet = new Buffer.alloc(this.payload.length + HEADER_SIZE);
         
+        // copies the header into the packet
         for (let head = 0; head < HEADER_SIZE; head++){
             packet[head] = this.responseHeader[head];
         }
         
+        // copies the payload into the packet
         for (let pl = 0; pl < this.payload.length; pl++){
             packet[pl + HEADER_SIZE] = this.payload[pl];
         }
