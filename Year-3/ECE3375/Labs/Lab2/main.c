@@ -1,6 +1,7 @@
 #include "address_map_arm.h"
 #include <stdio.h>
 
+// A9 Private Timer
 typedef struct Timer{
     int load;
     int count;
@@ -20,8 +21,26 @@ void DisplayHex(int value){
     volatile int * HEX_ptr = (int*) HEX3_HEX0_BASE; // Gets the Lower 4 Sigment Address as Hex
     volatile int * HEX_ptr2 = (int*) HEX5_HEX4_BASE; // Gets the other part of the Lower 4 Sigment Address as Hex
 
-    int segDis1 = hex_code[hundredth - (tenth*10)] + (hex_code[tenth - (sec*10)]<<8)+ (hex_code[sec - (tsec*10)]<<16) + (hex_code[tsec - (min*6)]<<24);
-    int segDis2 = hex_code[min - (tmin*10)] + (hex_code[tmin]<<8);
+    // time passed hundredth
+    int dHundredth = hex_code[hundredth - (tenth*10)];
+
+    // time passed tenth
+    int dTenth = hex_code[tenth - (sec*10)]<<8;
+
+    // time passed secs
+    int dSec = hex_code[sec - (tsec*10)]<<16;
+
+    // time passed Ten Sec
+    int dTenSec = hex_code[tsec - (min*6)]<<24;
+    
+    // time passed Min
+    int dMin = hex_code[min - (tmin*10)];
+
+    // time passed Ten Min
+    int dTenMin = hex_code[tmin]<<8;
+
+    int segDis1 =  dHundredth+ dTenth+ dSec + dTenSec;
+    int segDis2 = dMin + dTenMin;
 
     *HEX_ptr = segDis1;
     *HEX_ptr2 = segDis2;
@@ -43,7 +62,7 @@ int main(void){
     volatile Timer * const timer = (Timer*) MPCORE_PRIV_TIMER;
 
     volatile int interval = 2000000;
-    timer -> load = interval;
+    timer->load = interval;
     int counter;
     int stats;
     int lap = 0;
